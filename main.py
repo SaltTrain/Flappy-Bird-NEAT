@@ -15,6 +15,7 @@ from base import Base
 from pipe import Pipe
 from score_system import Scoring_System
 from neat_model import run_neat_model, replay_genome
+from nn_information_display import NN_Information_Display
 
 
 # dimensions for the pygame window
@@ -27,7 +28,7 @@ BG_IMG = [pygame.transform.scale2x(pygame.image.load(os.path.join('imgs','bg.png
     
     
     
-def draw_window(win, birds, pipes, base, scoring_system):
+def draw_window(win, birds, pipes, base, scoring_system, nn_information):
     """Handles the drawing of all sprites
 
     Args:
@@ -47,18 +48,26 @@ def draw_window(win, birds, pipes, base, scoring_system):
     # draw scoring system
     scoring_system.draw(win)
     
+    # draw nn information 
+    nn_information.draw(win)
+    
     # bird draws itself
     for bird in birds:
         bird.draw(win)
     
     # update the display with the new frame
     pygame.display.update()
-    
+
+pygame.init()
+gen = 1
+nn_information = NN_Information_Display(SCREEN_SIZE, [11, 24], (255, 255, 255), 24, 'freesansbold.ttf')
 def main(_genomes, config):
     """Main game function call
     """    
     
     pygame.init()
+    global gen
+    global nn_information
     
     # holds the data needed for each birds neural network
     networks = []
@@ -71,7 +80,8 @@ def main(_genomes, config):
     # instance objects
     base = Base(730)
     pipes = [Pipe(600)]
-    scoring_system = Scoring_System(SCREEN_SIZE, [1.3, 24], (255, 255, 255), 64, 'freesansbold.ttf')
+    scoring_system = Scoring_System(SCREEN_SIZE, [1.2, 24], (255, 255, 255), 44, 'freesansbold.ttf')
+    
     
     # setup a pygame window
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -105,7 +115,8 @@ def main(_genomes, config):
         if len(birds) > 0:
             if len(pipes) > 1 and birds[0].x > pipes[0].x + pipes[0].PIPE_TOP.get_width()/2:
                 pipe_index = 1
-        else: # if we have no birds than we just stop the loop
+        else: # if we have no birds than we just stop the loop 
+            gen += 1
             run = False
             break
                 
@@ -140,7 +151,8 @@ def main(_genomes, config):
             for bird in birds:
                 if pipe.collide(bird):
                     if len(birds) == 1:
-                        print(scoring_system.score)
+                        if genomes[birds.index(bird)].fitness > nn_information.best_fitness:
+                            nn_information.update_fitness_score(genomes[birds.index(bird)].fitness)
                     genomes[birds.index(bird)].fitness -= 0.5
                     networks.pop(birds.index(bird))
                     genomes.pop(birds.index(bird))
@@ -183,8 +195,11 @@ def main(_genomes, config):
         # update base position
         base.move()
         
+        # get nn information for display
+        nn_information.update_information(len(birds),gen)
+        
         # draws all the sprites on screen
-        draw_window(win, birds, pipes, base, scoring_system)
+        draw_window(win, birds, pipes, base, scoring_system, nn_information)
 
 
 ###--helper functions--###

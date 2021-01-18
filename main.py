@@ -151,6 +151,7 @@ def main(_genomes, config):
             for bird in birds:
                 if pipe.collide(bird):
                     if len(birds) == 1:
+                        # checks last bird fitness score and sees if its better or not
                         if genomes[birds.index(bird)].fitness > nn_information.best_fitness:
                             nn_information.update_fitness_score(genomes[birds.index(bird)].fitness)
                     genomes[birds.index(bird)].fitness -= 0.5
@@ -215,8 +216,6 @@ def instance_a_NeuralNetwork_foreach_object(_genomes, config, networks, birds, g
         genome.fitness = 0
         
         genomes.append(genome)
-
-# display neural network information on screen
 
 
 # main loop

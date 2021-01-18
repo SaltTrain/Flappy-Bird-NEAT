@@ -1,8 +1,19 @@
 import pygame
 
 class NN_Information_Display():
+    """Displays neural network information on screen
+    """    
     
     def __init__(self, screen_size, text_factor_location, text_color, font_size, font_type):
+        """NN_Information_Dispay constructor
+
+        Args:
+            screen_size ((integer)tuple): should contain width and height of screen
+            text_factor_location ((float)list): gets divided by screen_size to determine score drawing location EX: for center location [2,2]
+            text_color ((integer)tuple): should contain r, g, b values, each ranges from 0-255
+            font_size (integer): font size
+            font_type (string): string of supported pygame fonts, EX: freesansbold.ttf
+        """        
         
         self.screen_size = screen_size
         self.text_factor_location = text_factor_location
@@ -55,6 +66,11 @@ class NN_Information_Display():
         self.text_container_3.center = (self.screen_size[0]//self.text_factor_location[0], self.screen_size[1]//self.text_factor_location[1]+self.font_size+self.font_size)
     
     def draw(self, win):
+        """Handles the score drawing on screen
+
+        Args:
+            win (pygame.Surface): main window for displaying graphics
+        """       
         # updates rendered text each frame
         self.text_1 = self.font.render(self.first_line, True, self.text_color)
         self.text_2 = self.font.render(self.second_line, True, self.text_color)
@@ -66,6 +82,13 @@ class NN_Information_Display():
         win.blit(self.text_3 ,self.text_container_3)
         
     def update_information(self, bird_count, generation):
+        """Gets information on bird count and current generation for keeping 
+            text display updated
+
+        Args:
+            bird_count (integer): how many birds are currently left
+            generation (integer): current generation count
+        """        
         self.birds_remaining = bird_count
         self.generations = generation
         
@@ -73,6 +96,11 @@ class NN_Information_Display():
         self.second_line = ''.join(['Birds: ', str(self.birds_remaining)])
         
     def update_fitness_score(self, best_fitness):
+        """Gets information on the last bird left in the current generation
+
+        Args:
+            best_fitness (integer): best genome fitness score so far
+        """        
         self.best_fitness = best_fitness
         
         self.third_line = ''.join(['Fit: ', '{0:.2f}'.format(self.best_fitness)])
